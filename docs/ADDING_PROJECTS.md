@@ -167,6 +167,16 @@ links:
 
 Leave out any you don't have; the buttons appear only for links that exist. If a project has no links at all, write `links: {}`.
 
+At the top of a tech case study these become buttons, all opening in a new tab:
+
+| Field    | Button             | Style                                          |
+| -------- | ------------------ | ---------------------------------------------- |
+| `live`   | Launch live app ↗  | Primary (dark)                                 |
+| `demo`   | Demo ↗             | Primary if there's no `live`, otherwise secondary |
+| `github` | View source ↗      | Secondary when `live` or `demo` exists, otherwise primary |
+
+Example (Trash2Cash): `live: https://trash2cash.danielawofadeju.com` plus `github: https://github.com/wifimoneydev/Trash2cash`.
+
 ## 5. Metrics
 
 Only real, measured numbers. They show in the **Results** section.

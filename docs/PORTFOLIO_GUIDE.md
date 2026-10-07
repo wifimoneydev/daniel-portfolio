@@ -254,7 +254,7 @@ role: Solo developer           # optional
 tools: [Python, Flask, Next.js]
 links:
   github: https://github.com/wifimoneydev/my-project
-  live: https://...
+  live: https://...            # optional deployed app → "Launch live app ↗" (primary button)
 featured: false                # true = large presentation on Home and Tech
 order: 100                     # lower = earlier; also sets "Project 01" numbering
 draft: true                    # false = published

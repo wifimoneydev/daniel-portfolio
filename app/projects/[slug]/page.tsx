@@ -10,7 +10,6 @@ import { pageMetadata } from "@/lib/seo";
 import { site } from "@/data/site";
 import { pad, prettyUrl } from "@/lib/utils";
 import { ArrowLink, ButtonLink, Container, TagList, TitleBlock } from "@/components/ui/primitives";
-import { Github } from "@/components/ui/icons";
 import { SystemDiagram } from "@/components/projects/system-diagram";
 import { ProjectCard } from "@/components/projects/project-card";
 import { CaseStudyNav } from "@/components/case-study/case-study-nav";
@@ -101,7 +100,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="mt-8 flex flex-wrap gap-3">
                 {links.live && (
                   <ButtonLink href={links.live} icon="external">
-                    Live site
+                    Launch live app
                   </ButtonLink>
                 )}
                 {links.demo && (
@@ -110,7 +109,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </ButtonLink>
                 )}
                 {links.github && (
-                  <ButtonLink href={links.github} variant={links.live || links.demo ? "secondary" : "primary"} icon={<Github className="size-4" />}>
+                  <ButtonLink href={links.github} variant={links.live || links.demo ? "secondary" : "primary"} icon="external">
                     View source
                   </ButtonLink>
                 )}
