@@ -1,0 +1,101 @@
+---
+title: Trash2Cash
+summary: An AI-powered recycling platform for Nigeria — estimate a cash reward for recyclables, find where to drop them off, and ask a grounded assistant that understands how Nigerians actually talk about waste.
+categories: [AI, NLP, Full Stack]
+projectType: AI product · Recycling platform
+year: 2025
+tools:
+  - Python
+  - Flask
+  - OpenAI API
+  - NLP
+  - pytest
+  - JavaScript
+links:
+  github: https://github.com/wifimoneydev/Trash2cash
+featured: true
+# Shown only on the Work page (/projects). Other pages keep the system diagram.
+workThumbnail:
+  src: /images/projects/trash2cash/t2cthumbnail.png
+  alt: Trash2Cash home page with reference recycling rates per kilogram
+  position: 50% 100%
+order: 2
+highlights:
+  - 96.9% grounded-answer accuracy
+  - 1.6% raw hallucination rate
+  - 64-case live AI evaluation
+system:
+  - label: User message
+    detail: Free text, Nigerian terms
+  - label: Intent extraction
+    detail: OpenAI → structured JSON
+  - label: Schema validation
+    detail: Malformed output rejected
+  - label: Deterministic tools
+    detail: Rewards · locations · materials
+  - label: Grounded phrasing
+    detail: Numbers checked against facts
+  - label: Local NLP fallback
+    detail: If any step fails
+metrics:
+  - label: Automated tests
+    value: "69"
+  - label: Live AI evaluation cases
+    value: "64"
+  - label: Tool selection
+    value: "96.9%"
+  - label: Argument extraction
+    value: "100%"
+  - label: Grounded-answer accuracy
+    value: "96.9%"
+  - label: Raw hallucination rate
+    value: "1.6%"
+decisions:
+  - title: The model never computes the numbers
+    detail: OpenAI only works out what the user is asking — intent and arguments. Deterministic Python tools compute the reward or look up the location, and the model is shown only that verified fact to phrase.
+  - title: Validate model output before it touches business logic
+    detail: Extracted intents are parsed against a structured schema. Anything malformed is rejected instead of being passed to a business function.
+  - title: A numeric safety net
+    detail: After phrasing, every number in the reply must already appear in the verified fact. If not, the phrasing is discarded and the exact deterministic answer is sent instead.
+  - title: A structured material taxonomy with local terms
+    detail: Materials are modelled as a structured taxonomy that includes the terminology people in Nigeria actually use, so questions are matched to the right material and rate.
+  - title: Fail over, not fail closed
+    detail: A missing key, timeout, rate limit or malformed response falls back to a local NLP assistant, so the product keeps answering.
+limitations:
+  - The numeric safety net catches numeric hallucinations only; non-numeric fabrication is guarded by prompt instructions alone.
+  - A 1.6% raw hallucination rate is low, not zero — the guards reduce risk rather than eliminate it.
+  - The local NLP fallback is less capable than the OpenAI-assisted path.
+---
+
+Trash2Cash is a recycling platform built for Nigeria. A user can identify a recyclable material, get an estimated cash reward for it, find where to drop it off, and ask an AI recycling assistant questions in their own words.
+
+## Problem
+
+Plastic bottles, nylon sachets and aluminium cans fill streets and drains across Nigeria. Recycling has a motivation gap: there is little structure, little awareness and no obvious reward for the person holding the waste.
+
+An assistant for that problem has to be **trustworthy with numbers**. If it invents a payout rate or a drop-off point, the product fails the person using it.
+
+## What I built
+
+A full-stack **Flask** application with:
+
+- **Material identification** against a structured recyclable-material taxonomy that understands Nigerian recycling terminology.
+- **Reward estimation** from material and weight.
+- **Drop-off and location guidance.**
+- **A grounded AI recycling assistant** that answers questions about rewards, materials and locations using the platform’s own verified data.
+
+## Technical approach
+
+The assistant is a tool-using pipeline rather than a free-form chatbot. OpenAI extracts a structured intent from the user’s message. That intent is validated, routed to a deterministic Python tool, and the tool’s result becomes the only fact the model is allowed to restate. Follow-up questions such as “what about 10 kg?” are resolved from session context in plain Python.
+
+If any step fails — no API key, a timeout, malformed JSON — the request falls back to a local NLP assistant, and every response reports which mode answered.
+
+## Challenge
+
+An early version of the phrasing step **hedged on numbers it should have stated plainly**. Asked for the rates, the model replied that it couldn’t provide them — even though it had just been handed the verified figures.
+
+A regression test caught it. The phrasing prompt was rewritten to treat the supplied fact as authoritative and to restate every number exactly, and the numeric safety net was added so a phrasing that introduces an unverified number is never shown to the user.
+
+## Evaluation
+
+The assistant is measured, not assumed. Alongside **69 automated tests**, a **64-case live AI evaluation** runs against the real OpenAI API and scores each stage of the pipeline separately — tool selection, argument extraction, grounded-answer accuracy and raw hallucination rate — so a failure can be traced to the stage that caused it.

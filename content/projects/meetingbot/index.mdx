@@ -1,0 +1,115 @@
+---
+title: MeetingBot
+summary: An AI meeting assistant that turns a transcript or audio recording into a summary, action items, decisions and participants — with a question-answering chat grounded in what was actually said.
+categories: [AI, NLP, Full Stack]
+projectType: AI application
+year: 2025
+tools:
+  - Python
+  - Flask
+  - Whisper
+  - FAISS
+  - sentence-transformers
+  - OpenAI API
+  - Hugging Face Transformers
+  - PyTorch
+  - Next.js
+  - TypeScript
+  - Tailwind CSS
+  - pytest
+links:
+  github: https://github.com/wifimoneydev/meetingbot
+featured: true
+# Shown only on the Work page (/projects). Other pages keep the system diagram.
+workThumbnail:
+  src: /images/projects/meetingbot/meetingbotthumbnail.png
+  alt: MeetingBot meeting workspace, Ask MeetingBot tab answering questions about a transcript
+  position: 50% 100%
+order: 1
+highlights:
+  - 79 passing tests
+  - OpenAI path with local-model fallback
+  - Retrieval failure found and fixed through evaluation
+system:
+  - label: Transcript or audio
+    detail: Paste text or upload a recording
+  - label: Whisper
+    detail: Speech-to-text for audio
+  - label: Speaker-turn chunking
+    detail: Never splits mid-sentence
+  - label: Embeddings + FAISS
+    detail: Vector retrieval
+  - label: OpenAI or local QA
+    detail: Grounded answers
+  - label: Meeting intelligence
+    detail: Summary · actions · decisions · participants
+metrics:
+  - label: Passing tests
+    value: "79"
+  - label: Expected-failure tests
+    value: "2"
+    context: Marked as expected failures in the test suite
+decisions:
+  - title: Diagnose the retrieval before blaming the model
+    detail: When a generic question failed on a long transcript, I traced the failure to retrieval and context coverage — the evidence never reached the model — rather than treating it as a language-model problem.
+  - title: Full transcript when it fits, ranked chunks plus neighbours when it doesn’t
+    detail: The OpenAI path now sends the whole transcript when it fits within the context budget. When it doesn’t, it sends similarity-ranked chunks together with their neighbouring chunks, so nearby evidence isn’t cut off.
+  - title: Chunk along speaker turns
+    detail: Transcripts are split on speaker-turn and line boundaries with a one-line overlap, so an answer-bearing sentence is never split across two chunks.
+  - title: Every AI feature has a local fallback
+    detail: If the OpenAI key is missing, invalid or the call fails, MeetingBot falls back to local models, and each response states which mode answered.
+  - title: Decline rather than guess
+    detail: The local question-answering path rejects low-confidence answers and says it couldn’t find the answer in the meeting instead of inventing one.
+limitations:
+  - No speaker diarization yet — participants are detected from explicit speaker labels in the transcript.
+  - No persistence yet — meetings are not stored between sessions.
+  - Backend meeting state is held in memory and is not designed for concurrent multi-user production use.
+  - The local fallback remains weaker than the OpenAI path on some generic long-transcript questions.
+lessons:
+  - Answering one well-phrased question correctly proves very little. Generic, indirect questions are where retrieval weaknesses show up.
+  - When an AI system gives a wrong answer, the first question is what context the model actually saw.
+nextSteps:
+  - Speaker diarization for recordings without speaker labels.
+  - Persistent storage for meetings and their outputs.
+  - Per-user meeting state so the backend can serve concurrent users.
+  - Closing the gap between the local fallback and the OpenAI path on long transcripts.
+---
+
+MeetingBot takes a pasted transcript or an uploaded recording and, in one step, produces a meeting summary, a structured list of action items, the decisions that were confirmed, the participants — and a chat interface that answers questions from the transcript itself.
+
+## Problem
+
+Meetings generate a lot of talk and very little structure. Decisions, owners and deadlines end up buried in a transcript that nobody wants to read twice, and a general-purpose chatbot asked about the meeting will happily answer from guesswork rather than from what was actually said.
+
+## What I built
+
+A full-stack application with a **Flask** API and a **Next.js / TypeScript / Tailwind CSS** frontend:
+
+- **Transcript and audio ingestion** — paste text, or upload a recording that is transcribed with **Whisper** before analysis. Uploads go through secure file-handling checks.
+- **Meeting intelligence** — a summary, action items (task, owner and deadline where they are clearly stated), confirmed decisions and detected participants.
+- **Ask MeetingBot** — a retrieval-augmented chat that answers questions about the meeting from the transcript.
+- **Two execution paths** — OpenAI-powered when a key is configured, with a local-model fallback when it isn’t.
+
+## Technical approach
+
+For question answering, the transcript is chunked along speaker turns, embedded with a sentence-transformer model, and indexed in **FAISS**. Retrieved chunks are returned in their original document order so the context the model reads stays coherent.
+
+The retrieved context and the question then go to **OpenAI** when available, or to a local extractive question-answering model otherwise. Summaries, action items and decisions follow the same pattern: OpenAI when configured, local models and deterministic conversational patterns when not. Long transcripts are processed in chunks and merged rather than truncated.
+
+## Challenge
+
+Evaluation surfaced a failure on a long transcript. MeetingBot answered a semantically direct question correctly, but failed a more generic question whose evidence sat deeper in the transcript.
+
+The easy conclusion would have been “the model got it wrong”. The actual cause was **retrieval and context coverage**: similarity search ranked the direct question’s evidence highly, but the generic question didn’t match the relevant passage strongly enough, so the evidence never reached the model at all.
+
+## Evaluation
+
+Development is evaluation-driven. The failure above followed a deliberate loop:
+
+1. **Discover** — an evaluation question failed on a long transcript.
+2. **Reproduce** — the failure was isolated and reproduced.
+3. **Diagnose** — traced to retrieval/context coverage, not the language model.
+4. **Fix** — the OpenAI path uses the full transcript when it fits the context budget, and similarity-ranked chunks plus their neighbours when it doesn’t.
+5. **Validate** — the fix was verified against the evaluation and the test suite.
+
+The suite currently stands at **79 passing tests** and **2 expected-failure tests**.

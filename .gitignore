@@ -1,0 +1,53 @@
+# dependencies
+/node_modules
+
+# next.js / build output
+/.next/
+/out/
+/build/
+next-env.d.ts
+*.tsbuildinfo
+
+# env — real values never committed; .env.example (no secrets) is
+.env
+.env*
+!.env.example
+
+# credentials
+*.pem
+*.key
+*.p12
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# testing / coverage
+/coverage/
+
+# deployment tooling (local state)
+.vercel
+.netlify
+
+# os
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# editors / local tooling
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/
+
+# temporary files
+*.tmp
+*.temp
+
+# Private personal documents — never published or committed
+/private/

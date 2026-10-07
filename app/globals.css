@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Tokens — "drawing set meets engineering spec"
+   Light: warm paper + ink. Dark: graphite paper + soft light ink.
+   The accent (drafting vermilion) is used sparingly.
+------------------------------------------------------------------- */
+
+:root {
+  --paper: #f3f1ec;
+  --paper-2: #ebe8e1;
+  --paper-3: #e2ded5;
+  --ink: #141414;
+  --ink-2: #45433f;
+  --ink-3: #69665f;
+  --rule: #d8d4ca;
+  --rule-strong: #b9b4a9;
+  --accent: #d2461e;
+  --accent-ink: #ad3815; /* AA-contrast accent for text on paper */
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --ok: #2f7d4f;
+  --selection: color-mix(in srgb, var(--accent) 22%, transparent);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #151513;
+    --paper-2: #1c1b19;
+    --paper-3: #252421;
+    --ink: #ebe8e1;
+    --ink-2: #bcb8ae;
+    --ink-3: #908c83;
+    --rule: #2d2c28;
+    --rule-strong: #46443e;
+    --accent: #e0603a;
+    --accent-ink: #ef8461;
+    --ok: #5fb383;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #151513;
+  --paper-2: #1c1b19;
+  --paper-3: #252421;
+  --ink: #ebe8e1;
+  --ink-2: #bcb8ae;
+  --ink-3: #908c83;
+  --rule: #2d2c28;
+  --rule-strong: #46443e;
+  --accent: #e0603a;
+  --accent-ink: #ef8461;
+  --ok: #5fb383;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --breakpoint-xs: 30rem;
+}
+
+/* ------------------------------------------------------------------ Base */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5.5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: var(--selection);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  hr {
+    border-color: var(--rule);
+  }
+}
+
+/* ------------------------------------------------------------------ Typography */
+
+@layer components {
+  .t-display {
+    font-size: clamp(2.6rem, 1.4rem + 5.2vw, 5.75rem);
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    font-weight: 560;
+  }
+  .t-h1 {
+    font-size: clamp(2.25rem, 1.5rem + 3.2vw, 4.25rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 560;
+  }
+  .t-h2 {
+    font-size: clamp(1.65rem, 1.25rem + 1.6vw, 2.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    font-weight: 540;
+  }
+  .t-h3 {
+    font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 540;
+  }
+  .t-lead {
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
+    line-height: 1.5;
+    letter-spacing: -0.012em;
+    color: var(--ink-2);
+  }
+  /* Small technical label: indices, years, stacks, figure numbers */
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .t-mono {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* Refined link underline */
+  .link {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 240ms cubic-bezier(0.2, 0.7, 0.2, 1), color 160ms;
+    padding-bottom: 1px;
+  }
+  .link:hover {
+    background-size: 100% 1px;
+  }
+  .link-underlined {
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 160ms, color 160ms;
+  }
+  .link-underlined:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  /* Crop marks — architectural trim marks around a figure */
+  .crop-marks {
+    position: relative;
+  }
+  .crop-marks::before,
+  .crop-marks::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    border-color: var(--ink-3);
+  }
+  .crop-marks::before {
+    top: -8px;
+    left: -8px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  .crop-marks::after {
+    bottom: -8px;
+    right: -8px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  /* Faint drafting grid used on diagram plates */
+  .drafting-grid {
+    background-color: var(--paper-2);
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
+  }
+
+  /* Long-form prose (MDX) */
+  .prose {
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+  .prose > * + * {
+    margin-top: 1.1em;
+  }
+  .prose strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .prose a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    text-underline-offset: 0.2em;
+  }
+  .prose a:hover {
+    text-decoration-color: var(--accent);
+  }
+  .prose h3 {
+    color: var(--ink);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-top: 2em;
+  }
+  .prose ul,
+  .prose ol {
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose li {
+    position: relative;
+    padding-left: 1.5em;
+  }
+  .prose li + li {
+    margin-top: 0.5em;
+  }
+  .prose ul > li::before {
+    content: "";
+    position: absolute;
+    left: 0.15em;
+    top: 0.8em;
+    width: 0.6em;
+    height: 1px;
+    background: var(--ink-3);
+  }
+  .prose ol {
+    counter-reset: step;
+  }
+  .prose ol > li {
+    counter-increment: step;
+    padding-left: 2.2em;
+  }
+  .prose ol > li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    color: var(--accent-ink);
+  }
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+  .prose pre {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    border-radius: 4px;
+  }
+  .prose pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.25rem;
+    color: var(--ink);
+  }
+}
+
+/* ------------------------------------------------------------------ Motion */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anim-rise {
+    animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .anim-fade {
+    animation: fade 500ms ease-out both;
+  }
+  /* Scroll-linked reveal for browsers that support it; others simply show content. */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile menu (native <dialog>) */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-menu[open] {
+    animation: fade 180ms ease-out;
+  }
+  .mobile-menu[open] .menu-item {
+    animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+/* Status dot pulse — tiny, slow, and off under reduced motion */
+@keyframes ping-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  80%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .status-ping {
+    animation: ping-soft 2.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
