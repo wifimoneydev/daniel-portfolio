@@ -30,6 +30,8 @@ if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
   fail(`"${rawSlug}" is not a valid slug. Use lowercase letters, numbers and single hyphens, e.g. "my-project".`);
 }
 
+if (isArch && slug === "projects") fail(`"projects" is reserved for the /architecture/projects list page. Choose another slug.`);
+
 // Slugs must be unique across both collections (they share the /projects library).
 for (const dir of ["projects", "architecture"]) {
   if (fs.existsSync(path.join(root, "content", dir, slug))) {

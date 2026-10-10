@@ -1,14 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { site } from "@/data/site";
 import { education } from "@/data/education";
 import { getSkillGroups } from "@/data/skills";
-import { getArchitectureProjects, type ArchitectureProject } from "@/lib/content/loader";
-import { GALLERY_KINDS } from "@/lib/content/schema";
+import { getArchitectureProjects } from "@/lib/content/loader";
 import { pageMetadata } from "@/lib/seo";
-import { cn, pad } from "@/lib/utils";
-import { ArrowLink, Container, Section, TitleBlock } from "@/components/ui/primitives";
+import { pad } from "@/lib/utils";
+import { Container, Section, TitleBlock } from "@/components/ui/primitives";
 import { BrandEyebrow, PageHeader } from "@/components/sections/page-header";
 import { Capabilities } from "@/components/sections/capabilities";
 import { ContactCta } from "@/components/sections/contact-cta";
@@ -53,8 +51,30 @@ export default function ArchitecturePage() {
         }
       />
 
+      {/* Gateway to the project index. Projects themselves live on /architecture/projects. */}
       <Container className="pb-8">
-        {projects.length > 0 ? <ArchitectureIndex projects={projects} /> : <DrawingIndexEmpty />}
+        <Link
+          href="/architecture/projects"
+          className="group relative block overflow-hidden border border-rule transition-colors hover:border-ink"
+        >
+          <div className="drafting-grid absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100" aria-hidden />
+          <div className="relative flex flex-col gap-10 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-10 lg:p-14">
+            <div>
+              <p className="t-label">
+                Daniel <span className="text-accent-ink">/</span> Architecture <span className="text-accent-ink">/</span> Projects
+              </p>
+              <p className="t-h1 mt-6 text-ink">Explore My Projects</p>
+              <p className="mt-4 max-w-[46ch] text-ink-2">
+                {projects.length > 0
+                  ? `${pad(projects.length)} ${projects.length === 1 ? "project" : "projects"} — plans, sections, elevations and the thinking behind each design.`
+                  : "Architectural projects are being prepared for publication."}
+              </p>
+            </div>
+            <span className="inline-flex size-14 shrink-0 items-center justify-center rounded-full border border-ink bg-paper text-ink transition-colors duration-200 group-hover:bg-ink group-hover:text-paper sm:size-16">
+              <ArrowRight aria-hidden className="size-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </span>
+          </div>
+        </Link>
       </Container>
 
       <Section number="01" label="Approach" title="What architecture taught me.">
@@ -93,104 +113,5 @@ export default function ArchitecturePage() {
 
       <ContactCta title="Architecture or design opportunity?" />
     </>
-  );
-}
-
-/** Image-led project index: the first project runs full width, the rest in two columns. */
-function ArchitectureIndex({ projects }: { projects: ArchitectureProject[] }) {
-  return (
-    <section aria-label="Architecture projects">
-      <ul className="grid gap-x-8 gap-y-16 md:grid-cols-2">
-        {projects.map((p, i) => {
-          const img = p.thumbnail ?? p.hero;
-          const lead = i === 0;
-          return (
-            <li key={p.slug} className={lead ? "md:col-span-2" : undefined}>
-              <article className="group relative">
-                <div className={cn("relative overflow-hidden bg-paper-3", lead ? "aspect-[4/3] md:aspect-[21/9]" : "aspect-[4/3]")}>
-                  {img && (
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      priority={lead}
-                      sizes={lead ? "100vw" : "(min-width: 768px) 50vw, 100vw"}
-                      className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
-                    />
-                  )}
-                </div>
-                <div className="mt-4 grid gap-1 sm:grid-cols-12 sm:items-baseline sm:gap-6">
-                  <p className="t-label sm:col-span-2">
-                    <span className="text-accent-ink">A-{pad(p.index, 3)}</span>
-                  </p>
-                  <h2 className="t-h3 text-ink sm:col-span-6">
-                    <Link href={p.href} className="after:absolute after:inset-0 after:content-['']">
-                      {p.title}
-                    </Link>
-                  </h2>
-                  <p className="t-label sm:col-span-4 sm:text-right">
-                    {[p.projectType, p.location, p.year].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              </article>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-/** Intentional empty state: a drawing index awaiting its first sheets. */
-function DrawingIndexEmpty() {
-  const kinds = GALLERY_KINDS.filter((k) => k !== "screenshot" && k !== "photo");
-  return (
-    <section aria-labelledby="index-title" className="border border-rule">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
-        <h2 id="index-title" className="t-label text-ink-2">
-          Sheet A-000 — Drawing index
-        </h2>
-        <p className="t-label flex items-center gap-2">
-          <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-          In preparation
-        </p>
-      </div>
-
-      <div className="drafting-grid px-4 py-14 sm:px-6 sm:py-20 lg:py-24">
-        <div className="mx-auto max-w-2xl bg-paper/90 p-6 text-center sm:p-10">
-          <p className="t-h3 text-ink">Selected architectural work is being prepared for publication.</p>
-          <p className="mx-auto mt-4 max-w-[52ch] leading-relaxed text-ink-2">
-            Each project will be documented as a full set — drawings, plans, sections and renders, with the concept and process behind them.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <ArrowLink href="/contact">Ask about architectural work</ArrowLink>
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden border-t border-rule sm:block">
-        <div className="grid grid-cols-12 gap-6 border-b border-rule px-6 py-2.5">
-          {["No.", "Project", "Type", "Year"].map((h, i) => (
-            <span key={h} className={cn("t-label", i === 0 ? "col-span-2" : i === 1 ? "col-span-6" : "col-span-2")}>
-              {h}
-            </span>
-          ))}
-        </div>
-        <div className="grid grid-cols-12 gap-6 px-6 py-3 text-ink-3">
-          <span className="t-mono col-span-2">A-001</span>
-          <span className="col-span-6 italic">Forthcoming</span>
-          <span className="col-span-2">—</span>
-          <span className="col-span-2">—</span>
-        </div>
-      </div>
-
-      <ul className="flex flex-wrap gap-x-5 gap-y-2 border-t border-rule px-4 py-3 sm:px-6" aria-label="Drawing types each project will include">
-        {kinds.map((k) => (
-          <li key={k} className="t-label">
-            {k}s
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

@@ -21,6 +21,7 @@
     "next-mdx-remote": "^6.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "react-zoom-pan-pinch": "^4.2.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

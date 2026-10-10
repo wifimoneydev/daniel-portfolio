@@ -17,7 +17,7 @@ The personal portfolio of **Daniel Awofadeju**.
 
 The site is **content-driven**. Pages are generated from files in `content/` and `data/`. To add a project, certificate or job you edit content, not code. The design is meant to stay stable while the content grows.
 
-Pages: `/` (Home), `/projects` (the "Work" library), `/projects/<slug>` (tech case studies), `/tech`, `/architecture`, `/architecture/<slug>`, `/lab`, `/about`, `/contact`.
+Pages: `/` (Home), `/projects` (the "Work" library), `/projects/<slug>` (tech case studies), `/tech`, `/architecture` (landing page with an "Explore My Projects" gateway), `/architecture/projects` (the list of architectural projects), `/architecture/<slug>`, `/lab`, `/about`, `/contact`.
 
 ## How I Built It
 
@@ -249,7 +249,7 @@ summary: One or two sentences.
 categories: [AI, Full Stack]   # AI | Full Stack | NLP | Computer Vision | Architecture | Experimental | Architecture + Technology
 projectType: Web application
 year: 2026
-status: In progress            # optional: Completed | In progress | Prototype | Concept | Archived
+status: In progress            # optional: Completed | In progress | Prototype | Concept | Conceptual design | Archived
 role: Solo developer           # optional
 tools: [Python, Flask, Next.js]
 links:
@@ -293,6 +293,7 @@ categories: [Architecture]     # add "Architecture + Technology" for interactive
 projectType: Residential
 year: 2023
 location: City, Country
+completion: April 2024         # optional, shown as "Completion"
 role: Designer
 tools: []                      # software used on this project (confirmed only)
 concept: One-sentence concept, shown prominently.
@@ -310,9 +311,13 @@ downloads: []                  # optional deliberate downloads: { label, href }
 draft: true
 ```
 
-The text below the frontmatter: the description first, then `## Concept`, `## Process`, and optionally `## Case study`. The gallery is grouped by `kind` with figure numbers; visitors can tap an image to enlarge it.
+The text below the frontmatter: the description first, then `## Concept`, then any other sections you write (e.g. `## Design philosophy`, `## Spatial planning`, `## Process`) in that order, then the gallery, then optionally `## Case study`. The gallery is grouped by `kind` with figure numbers; visitors can tap an image to enlarge it. Working example: `content/architecture/sickle-cell-hospital/`.
+
+Before publishing drawings, crop off sheet title blocks (name/matric number, course code, supervisor, page numbers). Keep untouched originals in `private/` (git-ignored). The Sickle Cell hospital originals are in `private/sickle-cell-hospital/`.
 
 Never put CAD, Revit or 3D source files in `public/`.
+
+Published architecture projects appear automatically, numbered, on `/architecture/projects` (lowest `order` first). The `/architecture` landing page shows only the gateway to that list, not individual projects. The slug `projects` is reserved for that list page. Categories and filters are deliberately not used yet; add them only once there are enough projects to need them.
 
 ## Updating an Existing Project
 
@@ -336,7 +341,7 @@ Never put CAD, Revit or 3D source files in `public/`.
 - `workThumbnail`: shown **only** on the Work library (`/projects`).
 - `hero`: architecture projects only; the large top image.
 - `gallery`: extra images. Tech pages show them under "Screens"; architecture pages group them by `kind`.
-- `position`: optional crop anchor used by project cards.
+- `position`: optional crop anchor used by project cards and the architecture hero (desktop band).
 
 **Current design decision:** MeetingBot and Trash2Cash have supplied screenshots as `workThumbnail`, so they show on `/projects` only. Home, Tech and the case-study pages intentionally keep the system diagrams. Image usage is contextual: do not assume every project image must appear on every page.
 

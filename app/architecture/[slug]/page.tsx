@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getArchitectureProject, getArchitectureProjects, getRelatedProjects, toSummary } from "@/lib/content/loader";
-import { ARCHITECTURE_SECTIONS, matchCanonical } from "@/lib/content/sections";
+import { ARCHITECTURE_SECTIONS, matchCanonical, slugify } from "@/lib/content/sections";
 import { Mdx } from "@/lib/mdx";
 import { pageMetadata } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -40,10 +41,14 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
   const project = getArchitectureProject(slug);
   if (!project) notFound();
 
-  const { byId, extras } = matchCanonical(ARCHITECTURE_SECTIONS, project.sections);
+  const { byId } = matchCanonical(ARCHITECTURE_SECTIONS, project.sections);
+  const canonicalOf = (id: string) =>
+    ARCHITECTURE_SECTIONS.find((d) => d.id === id || d.aliases.map(slugify).includes(id))?.id;
+  // Concept leads; "Case study" follows the gallery. Every other "## Heading"
+  // (Process, Design philosophy, Spatial planning, …) appears before the gallery, in written order.
   const concept = byId.get("concept");
-  const process = byId.get("process");
-  const caseStudy = [byId.get("case-study"), ...extras].filter((s): s is NonNullable<typeof s> => !!s);
+  const narrative = project.sections.filter((s) => !["concept", "case-study"].includes(canonicalOf(s.id) ?? ""));
+  const caseStudy = [byId.get("case-study")].filter((s): s is NonNullable<typeof s> => !!s);
   const related = getRelatedProjects(project);
   const hero = project.hero;
 
@@ -52,8 +57,21 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
       {/* ---------------------------------------------------------- Hero */}
       {hero && (
         <figure className="relative">
-          <div className="relative h-[62svh] max-h-[56rem] min-h-[22rem] w-full bg-paper-3 sm:h-[72svh] lg:h-[82svh]">
-            <Image src={hero.src} alt={hero.alt} fill priority sizes="100vw" className="anim-fade object-cover" />
+          {/* Phones and tablets: show the whole image at its own proportions (drawings stay legible).
+              Desktop: full-bleed, cropped band. */}
+          <div
+            className="relative aspect-[var(--hero-ar)] max-h-[56rem] w-full bg-paper-3 lg:aspect-auto lg:h-[82svh] lg:min-h-[22rem]"
+            style={{ "--hero-ar": `${hero.width} / ${hero.height}` } as CSSProperties}
+          >
+            <Image
+              src={hero.src}
+              alt={hero.alt}
+              fill
+              priority
+              sizes="100vw"
+              className="anim-fade object-cover"
+              style={hero.position ? { objectPosition: hero.position } : undefined}
+            />
           </div>
           {hero.caption && (
             <Container>
@@ -76,6 +94,12 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
                 </Link>
               </li>
               <li aria-hidden>/</li>
+              <li>
+                <Link href="/architecture/projects" className="link hover:text-ink">
+                  Projects
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
               <li aria-current="page" className="text-ink-2">
                 {project.title}
               </li>
@@ -94,6 +118,7 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
                 columns={2}
                 items={[
                   { label: "Year", value: project.year },
+                  { label: "Completion", value: project.completion },
                   { label: "Type", value: project.projectType },
                   { label: "Location", value: project.location },
                   { label: "Role", value: project.role },
@@ -120,11 +145,11 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
               {concept && <Mdx source={concept.body} />}
             </TextBlock>
           )}
-          {process && (
-            <TextBlock label="Process">
-              <Mdx source={process.body} />
+          {narrative.map((s) => (
+            <TextBlock key={s.id} label={s.title}>
+              <Mdx source={s.body} />
             </TextBlock>
-          )}
+          ))}
         </div>
       </Container>
 
@@ -173,7 +198,7 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
               <h2 id="related-title" className="t-label">
                 Related work
               </h2>
-              <ArrowLink href="/architecture">All architecture</ArrowLink>
+              <ArrowLink href="/architecture/projects">All projects</ArrowLink>
             </div>
             <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
@@ -185,6 +210,13 @@ export default async function ArchitectureProjectPage({ params }: { params: Prom
           </Container>
         </section>
       )}
+
+      <Container className="border-t border-rule py-10">
+        <Link href="/architecture/projects" className="group inline-flex items-center gap-2 text-[0.9375rem] font-medium text-ink hover:text-accent-ink">
+          <ArrowLeft aria-hidden className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+          <span className="link">All architectural projects</span>
+        </Link>
+      </Container>
 
       <ContactCta title="Architecture or design opportunity?" />
     </article>

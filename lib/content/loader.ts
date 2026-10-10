@@ -34,8 +34,8 @@ type Shared = {
   index: number;
   intro: string;
   sections: BodySection[];
-  thumbnail?: ResolvedImage;
-  workThumbnail?: ResolvedImage;
+  thumbnail?: ResolvedImage & { position?: string };
+  workThumbnail?: ResolvedImage & { position?: string };
   gallery: GalleryImage[];
 };
 
@@ -43,7 +43,7 @@ export type TechProject = Omit<TechFrontmatter, "thumbnail" | "workThumbnail" | 
   Shared & { discipline: "tech" };
 
 export type ArchitectureProject = Omit<ArchitectureFrontmatter, "thumbnail" | "workThumbnail" | "gallery" | "hero"> &
-  Shared & { discipline: "architecture"; hero?: ResolvedImage };
+  Shared & { discipline: "architecture"; hero?: ResolvedImage & { position?: string } };
 
 export type Project = TechProject | ArchitectureProject;
 
@@ -129,6 +129,9 @@ function load() {
   const tech = loadTech();
   const architecture = loadArchitecture();
   const seen = new Set<string>();
+  for (const p of architecture) {
+    if (p.slug === "projects") throw new Error(`[content] "projects" is reserved (it is the /architecture/projects list page). Rename that project's folder.`);
+  }
   for (const p of [...tech, ...architecture]) {
     if (seen.has(p.slug)) throw new Error(`[content] Duplicate project slug "${p.slug}". Slugs must be unique.`);
     seen.add(p.slug);

@@ -86,6 +86,7 @@ categories: [Architecture]
 projectType: Residential
 year: 2023
 location: Osun State, Nigeria
+completion: March 2023         # optional
 role: Designer
 tools: [ ]                     # the software you used
 concept: Rooms open onto a shared, shaded courtyard.
@@ -109,6 +110,14 @@ Project description (the brief, the site, your response).
 ## Process
 ## Case study      # optional, longer write-up
 ```
+
+Published projects are listed automatically on `/architecture/projects` (numbered by `order`), which visitors reach through the "Explore My Projects" gateway on `/architecture`. Don't use the slug `projects`; it's reserved for that list.
+
+Page order: hero → title block → description → **Concept** → every other `## Heading` you write (e.g. `## Design philosophy`, `## Spatial planning`, `## Process`), in the order you write them → gallery → **Case study**. Example: `content/architecture/sickle-cell-hospital/index.mdx`.
+
+On phones and tablets the hero shows the whole image at its own proportions, so drawings stay legible. From desktop width it becomes a full-width cropped band. Add `position:` to the hero (e.g. `50% 40%`) to choose what stays visible in that band.
+
+Gallery images are shown uncropped. Remove sheet title blocks (student/ID numbers, course codes) **before** adding drawings, since everything in `public/` is downloadable. Keep untouched originals in `private/`.
 
 Gallery `kind` can be `render`, `plan`, `section`, `elevation`, `drawing`, `diagram`, `model` or `photo`. The gallery groups images by kind and numbers them as figures. Visitors can click an image to open it full screen.
 
@@ -154,7 +163,7 @@ workThumbnail:
   position: 50% 100%      # optional crop anchor; "50% 100%" keeps the bottom
 ```
 
-The Work card is 16:10. `position` (any CSS object-position) chooses which part stays visible when the image is cropped. It is applied by project cards only (the Work library, related-project cards); other images are shown uncropped or centred.
+The Work card is 16:10. `position` (any CSS object-position) chooses which part stays visible when the image is cropped. It is applied by project cards (the Work library, related-project cards, the Architecture index) and by the architecture hero band on desktop; other images are shown uncropped.
 
 ## 4. GitHub, live demo and other links
 
@@ -206,7 +215,7 @@ highlights:
 | `order: 1`        | Lower numbers come first. Also sets the "Project 01" number.                  |
 | `draft: true`     | Hidden everywhere. Preview it with `SHOW_DRAFTS=true npm run dev`.             |
 | `draft: false`    | Published.                                                                    |
-| `status:`         | Optional: `Completed`, `In progress`, `Prototype`, `Concept`, `Archived`.     |
+| `status:`         | Optional: `Completed`, `In progress`, `Prototype`, `Concept`, `Conceptual design`, `Archived`. |
 | `seo:`            | Optional `title` / `description` overrides for search engines.                |
 
 ## 7. Categories and filters

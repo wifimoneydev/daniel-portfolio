@@ -16,7 +16,7 @@ export const CATEGORIES = [
   "Architecture + Technology",
 ] as const;
 
-export const STATUSES = ["Completed", "In progress", "Prototype", "Concept", "Archived"] as const;
+export const STATUSES = ["Completed", "In progress", "Prototype", "Concept", "Conceptual design", "Archived"] as const;
 
 export const GALLERY_KINDS = [
   "render",
@@ -95,6 +95,8 @@ export const techProjectSchema = baseSchema.extend({
 export const architectureProjectSchema = baseSchema
   .extend({
     location: z.string().optional(),
+    /** When the design was completed, as precise as known, e.g. "April 2024". */
+    completion: z.string().optional(),
     hero: imageSchema.optional(),
     concept: z.string().optional(),
     /** Downloads you explicitly choose to publish (e.g. a PDF board). */
